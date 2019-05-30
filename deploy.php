@@ -24,7 +24,7 @@ set('allow_anonymous_stats', false);
 host('51.77.200.226')
     ->user('root')
     ->roles('app')
-    ->set('branch', 'master')
+    ->set('branch', 'build1.1')
     ->set('deploy_path', '/var/www/deployer/public/{{application}}');
 
 // Tasks
@@ -39,8 +39,7 @@ task('deploy', [
     'deploy:shared',
     'deploy:writable',
     // 'deploy:vendors',
-    'deploy:node_modules',
-    'deploy:build',
+    // 'deploy:node_modules',
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
@@ -55,8 +54,18 @@ task('deploy:node_modules', function () {
 
 desc('Building application');
 task('deploy:build', function () {
-    run('cd {{release_path}} && ng build');
+    run('ng build');
+});
+
+desc('Prepare git');
+task('deploy:git', function () {
+    run('git branch release');
+    run('git checkout release');
+    run('git filter-branch --subdirectory-filter dist');
 });
 
 // [Optional] If deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
+
+after('deploy:build', 'deploy:git');
+before('deploy', 'deploy:build');

@@ -1,0 +1,6 @@
+# Enable AllowOverride All for enable .htaccess
+# ErrorDocument 500 /index.html
+AuthUserFile /var/www/deployer/public/api_senapi/releases/7/public/.htpasswd
+AuthName "Name of Secure Area"
+AuthType Basic
+require valid-user
